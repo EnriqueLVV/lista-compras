@@ -3,168 +3,475 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Compras - Familia Luna Victoria Herrera</title>
+    <title>Lista de Compras Dinámica - Luna Victoria Herrera</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: #f5f1ec; padding: 10px; }
-        .header { background: linear-gradient(135deg, #d4a574, #c9956f); color: white; padding: 20px; text-align: center; margin-bottom: 15px; border-radius: 8px; }
-        .header h1 { font-size: 22px; margin-bottom: 8px; }
-        .header p { font-size: 12px; opacity: 0.95; margin-bottom: 3px; }
-        .resumen { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .resumen-item { background: rgba(255,255,255,0.15); padding: 10px; border-radius: 6px; text-align: center; }
-        .resumen-item .label { font-size: 10px; opacity: 0.9; }
-        .resumen-item .value { font-size: 16px; font-weight: bold; margin-top: 4px; }
-        .content { padding: 0; }
-        .categoria { background: #d4a574; color: white; padding: 10px; margin: 15px 0 0 0; font-weight: 700; border-radius: 4px; font-size: 13px; }
-        .item { background: white; padding: 12px; margin: 0 0 1px 0; display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: start; border-bottom: 1px solid #e8dcc8; }
-        .item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; margin-top: 2px; accent-color: #d4a574; }
-        .item input[type="checkbox"]:checked ~ .item-info { opacity: 0.5; }
-        .item input[type="checkbox"]:checked ~ .item-info .nombre { text-decoration: line-through; }
-        .nombre { font-weight: 600; font-size: 13px; margin-bottom: 3px; }
-        .detalles { font-size: 11px; color: #666; }
-        .item-right { text-align: right; }
-        .precio-input { width: 55px; padding: 3px; border: 1px solid #d4a574; border-radius: 3px; font-size: 11px; font-weight: 600; color: #c9956f; text-align: center; margin-bottom: 3px; }
-        .costo { font-weight: 700; color: #c9956f; font-size: 12px; }
-        .footer { background: white; padding: 20px; text-align: center; border-top: 2px solid #e8dcc8; margin-top: 15px; border-radius: 8px; }
-        .budget { background: linear-gradient(135deg, #d4a574, #c9956f); color: white; padding: 20px; border-radius: 6px; }
-        .budget-label { font-size: 11px; opacity: 0.9; margin-bottom: 8px; }
-        .budget-amount { font-size: 28px; font-weight: 700; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f1e8 0%, #ede8df 100%);
+            color: #2c2c2c;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #faf8f3;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #8b6914 0%, #a88c2c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1em;
+            opacity: 0.95;
+            margin: 5px 0;
+        }
+        
+        .header .family-info {
+            font-size: 0.9em;
+            opacity: 0.85;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+        
+        .budget-summary {
+            background: white;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e0dcd5;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            font-size: 0.95em;
+        }
+        
+        .budget-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+        
+        .budget-label {
+            color: #5c5c5c;
+            font-weight: 600;
+        }
+        
+        .budget-value {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #2d5016;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .category {
+            margin-bottom: 30px;
+        }
+        
+        .category-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3em;
+            color: #8b6914;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #d4a574;
+            padding-bottom: 10px;
+        }
+        
+        .items-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
+        .item {
+            display: grid;
+            grid-template-columns: 40px 1fr 80px;
+            gap: 12px;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            border-left: 3px solid #d4a574;
+            transition: all 0.3s ease;
+        }
+        
+        .item.checked {
+            opacity: 0.6;
+            background: #f5f5f5;
+        }
+        
+        .item.checked .item-name {
+            text-decoration: line-through;
+            color: #999;
+        }
+        
+        .item-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #2d5016;
+        }
+        
+        .item-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .item-name {
+            font-weight: 600;
+            color: #2c2c2c;
+            font-size: 0.95em;
+        }
+        
+        .item-specs {
+            font-size: 0.85em;
+            color: #7c7c7c;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .item-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        
+        .tag {
+            font-size: 0.75em;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        .tag-perecedero {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .tag-compra-dia {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        
+        .tag-almacenaje {
+            background: #eceff1;
+            color: #455a64;
+        }
+        
+        .price-section {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            text-align: right;
+        }
+        
+        .price-label {
+            font-size: 0.75em;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .price-input {
+            width: 70px;
+            padding: 4px 6px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-weight: 600;
+            text-align: right;
+            color: #2d5016;
+        }
+        
+        .price-input:focus {
+            outline: none;
+            border-color: #8b6914;
+            background: #fffef5;
+        }
+        
+        .price-total {
+            font-size: 0.95em;
+            font-weight: 700;
+            color: #2d5016;
+        }
+        
+        .footer {
+            background: #f0ebe1;
+            padding: 20px 30px;
+            border-top: 2px solid #d4a574;
+            text-align: right;
+        }
+        
+        .footer-label {
+            font-size: 0.9em;
+            color: #5c5c5c;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .footer-total {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5em;
+            color: #2d5016;
+            font-weight: 700;
+        }
+        
+        @media (max-width: 768px) {
+            .budget-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .item {
+                grid-template-columns: 30px 1fr 60px;
+                gap: 8px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🛒 Lista de Compras</h1>
-        <p>Familia Luna Victoria Herrera • 15 Días • 4 Personas</p>
-        <p style="font-size: 11px; margin-top: 4px;">Papá (54), Mamá (49), Hija (17), Hijo (15)</p>
-        <div class="resumen">
-            <div class="resumen-item">
-                <div class="label">Total</div>
-                <div class="value" id="total">S/ 822.00</div>
-            </div>
-            <div class="resumen-item">
-                <div class="label">Comprando</div>
-                <div class="value" id="comprando">S/ 0.00</div>
-            </div>
-            <div class="resumen-item">
-                <div class="label">Falta</div>
-                <div class="value" id="falta">S/ 822.00</div>
+    <div class="container">
+        <div class="header">
+            <h1>🛒 Lista de Compras</h1>
+            <div class="subtitle">Familia Luna Victoria Herrera • 7 Días • 4 Personas</div>
+            <div class="family-info">
+                Papá (54 años) • Mamá (49 años) • Hija (17 años) • Hijo (15 años)
             </div>
         </div>
-    </div>
-
-    <div class="content">
-        <div class="categoria">🥚 PROTEÍNAS</div>
-        <div class="item" data-cantidad="2"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Huevos frescos</div><div class="detalles">2 planchas</div></div><div class="item-right"><input type="number" class="precio-input" value="10.5" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 21.00</div></div></div>
-        <div class="item" data-cantidad="3.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Pechuga de Pollo</div><div class="detalles">3.5 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="18" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 63.00</div></div></div>
-        <div class="item" data-cantidad="3"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Presas de Pollo</div><div class="detalles">3 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="15" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 45.00</div></div></div>
-        <div class="item" data-cantidad="3"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Costillar de Chancho</div><div class="detalles">3 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="24" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 72.00</div></div></div>
-        <div class="item" data-cantidad="2.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Carne Molida</div><div class="detalles">2.5 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="18" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 45.00</div></div></div>
-        <div class="item" data-cantidad="0.8"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Hígado de Res</div><div class="detalles">0.8 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="18" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 14.40</div></div></div>
-        <div class="item" data-cantidad="1"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Pescado Fresco</div><div class="detalles">1 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="32" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 32.00</div></div></div>
-        <div class="item" data-cantidad="1"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Atún en lata</div><div class="detalles">1 lata</div></div><div class="item-right"><input type="number" class="precio-input" value="3.5" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 3.50</div></div></div>
-        <div class="item" data-cantidad="2"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Hotdog</div><div class="detalles">2 paquetes</div></div><div class="item-right"><input type="number" class="precio-input" value="8" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 16.00</div></div></div>
-        <div class="item" data-cantidad="1"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Bistec de Res</div><div class="detalles">1 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="42" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 42.00</div></div></div>
-
-        <div class="categoria">🥛 LÁCTEOS</div>
-        <div class="item" data-cantidad="2"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Leche fresca</div><div class="detalles">2 planchas</div></div><div class="item-right"><input type="number" class="precio-input" value="42" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 84.00</div></div></div>
-        <div class="item" data-cantidad="0.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Queso Fundido</div><div class="detalles">500g</div></div><div class="item-right"><input type="number" class="precio-input" value="35" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 17.50</div></div></div>
-        <div class="item" data-cantidad="0.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Queso Laive</div><div class="detalles">500g</div></div><div class="item-right"><input type="number" class="precio-input" value="38" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 19.00</div></div></div>
-        <div class="item" data-cantidad="0.4"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Jamonada</div><div class="detalles">400g</div></div><div class="item-right"><input type="number" class="precio-input" value="85" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 34.00</div></div></div>
-        <div class="item" data-cantidad="0.2"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Mayonesa</div><div class="detalles">200g</div></div><div class="item-right"><input type="number" class="precio-input" value="40" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 8.00</div></div></div>
-
-        <div class="categoria">🍞 PAN & HARINAS</div>
-        <div class="item" data-cantidad="20"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Pan Ciabatta</div><div class="detalles">20 unidades</div></div><div class="item-right"><input type="number" class="precio-input" value="2.5" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 50.00</div></div></div>
-        <div class="item" data-cantidad="15"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Pan Integral</div><div class="detalles">15 unidades</div></div><div class="item-right"><input type="number" class="precio-input" value="1.7" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 25.50</div></div></div>
-        <div class="item" data-cantidad="12"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Pan Blanco</div><div class="detalles">12 unidades</div></div><div class="item-right"><input type="number" class="precio-input" value="1.5" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 18.00</div></div></div>
-        <div class="item" data-cantidad="0.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Quáker/Avena</div><div class="detalles">500g</div></div><div class="item-right"><input type="number" class="precio-input" value="12" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 6.00</div></div></div>
-        <div class="item" data-cantidad="0.3"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Pasas y Nueces</div><div class="detalles">300g</div></div><div class="item-right"><input type="number" class="precio-input" value="45" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 13.50</div></div></div>
-        <div class="item" data-cantidad="0.1"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Pan Molido</div><div class="detalles">100g</div></div><div class="item-right"><input type="number" class="precio-input" value="8" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 0.80</div></div></div>
-        <div class="item" data-cantidad="0.2"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Maizena</div><div class="detalles">200g</div></div><div class="item-right"><input type="number" class="precio-input" value="3" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 0.60</div></div></div>
-
-        <div class="categoria">🥬 VERDURAS & TUBÉRCULOS</div>
-        <div class="item" data-cantidad="10"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Papa Blanca</div><div class="detalles">10 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="2.5" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 25.00</div></div></div>
-        <div class="item" data-cantidad="2"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Papa Amarilla</div><div class="detalles">2 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="3.5" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 7.00</div></div></div>
-        <div class="item" data-cantidad="5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Cebolla Morada</div><div class="detalles">5 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="2" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 10.00</div></div></div>
-        <div class="item" data-cantidad="2"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Tomate Rojo</div><div class="detalles">2 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="4" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 8.00</div></div></div>
-        <div class="item" data-cantidad="1"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Coliflor</div><div class="detalles">1 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="6" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 6.00</div></div></div>
-        <div class="item" data-cantidad="1"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Palta</div><div class="detalles">1 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="8" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 8.00</div></div></div>
-        <div class="item" data-cantidad="1"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Zanahoria</div><div class="detalles">1 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="3.5" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 3.50</div></div></div>
-        <div class="item" data-cantidad="0.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Arvejas Frescas</div><div class="detalles">500g</div></div><div class="item-right"><input type="number" class="precio-input" value="8" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 4.00</div></div></div>
-        <div class="item" data-cantidad="0.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Camote</div><div class="detalles">500g</div></div><div class="item-right"><input type="number" class="precio-input" value="3" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 1.50</div></div></div>
-        <div class="item" data-cantidad="1.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Limón</div><div class="detalles">1.5 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="4" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 6.00</div></div></div>
-
-        <div class="categoria">🌶️ AJÍ & CONDIMENTOS</div>
-        <div class="item" data-cantidad="1"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Ají Amarillo</div><div class="detalles">1 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="12" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 12.00</div></div></div>
-        <div class="item" data-cantidad="0.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Ají Rojo</div><div class="detalles">500g</div></div><div class="item-right"><input type="number" class="precio-input" value="8" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 4.00</div></div></div>
-        <div class="item" data-cantidad="0.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Ají Verde</div><div class="detalles">500g</div></div><div class="item-right"><input type="number" class="precio-input" value="6" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 3.00</div></div></div>
-        <div class="item" data-cantidad="0.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Ajo</div><div class="detalles">500g</div></div><div class="item-right"><input type="number" class="precio-input" value="5" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 2.50</div></div></div>
-        <div class="item" data-cantidad="0.1"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Perejil Fresco</div><div class="detalles">100g</div></div><div class="item-right"><input type="number" class="precio-input" value="10" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 1.00</div></div></div>
-        <div class="item" data-cantidad="0.05"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Comino</div><div class="detalles">50g</div></div><div class="item-right"><input type="number" class="precio-input" value="15" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 0.75</div></div></div>
-        <div class="item" data-cantidad="0.05"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Orégano</div><div class="detalles">50g</div></div><div class="item-right"><input type="number" class="precio-input" value="15" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 0.75</div></div></div>
-        <div class="item" data-cantidad="1"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Sal Iodizada</div><div class="detalles">1 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="1.5" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 1.50</div></div></div>
-
-        <div class="categoria">🫒 ACEITES & SALSAS</div>
-        <div class="item" data-cantidad="1"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Aceite Vegetal</div><div class="detalles">1 L</div></div><div class="item-right"><input type="number" class="precio-input" value="12" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 12.00</div></div></div>
-        <div class="item" data-cantidad="0.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Vinagre Blanco</div><div class="detalles">500ml</div></div><div class="item-right"><input type="number" class="precio-input" value="4" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 2.00</div></div></div>
-        <div class="item" data-cantidad="0.2"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Aceituna</div><div class="detalles">200g</div></div><div class="item-right"><input type="number" class="precio-input" value="20" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 4.00</div></div></div>
-        <div class="item" data-cantidad="0.2"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Maní Molido</div><div class="detalles">200g</div></div><div class="item-right"><input type="number" class="precio-input" value="30" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 6.00</div></div></div>
-
-        <div class="categoria">🌾 CEREALES & GRANOS</div>
-        <div class="item" data-cantidad="1.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Arroz Blanco</div><div class="detalles">1.5 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="4" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 6.00</div></div></div>
-        <div class="item" data-cantidad="0.8"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Tallarín Amarillo</div><div class="detalles">800g</div></div><div class="item-right"><input type="number" class="precio-input" value="6" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 4.80</div></div></div>
-        <div class="item" data-cantidad="0.3"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Tallarín Verde</div><div class="detalles">300g</div></div><div class="item-right"><input type="number" class="precio-input" value="8" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 2.40</div></div></div>
-        <div class="item" data-cantidad="0.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Trigo Grano</div><div class="detalles">500g</div></div><div class="item-right"><input type="number" class="precio-input" value="5" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 2.50</div></div></div>
-        <div class="item" data-cantidad="0.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Frejol Canario</div><div class="detalles">500g</div></div><div class="item-right"><input type="number" class="precio-input" value="6" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 3.00</div></div></div>
-        <div class="item" data-cantidad="0.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Papa Deshidratada</div><div class="detalles">500g</div></div><div class="item-right"><input type="number" class="precio-input" value="18" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 9.00</div></div></div>
-        <div class="item" data-cantidad="1"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Locro</div><div class="detalles">1 kg</div></div><div class="item-right"><input type="number" class="precio-input" value="8" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 8.00</div></div></div>
-
-        <div class="categoria">☕ BEBIDAS</div>
-        <div class="item" data-cantidad="0.5"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Café molido</div><div class="detalles">500g</div></div><div class="item-right"><input type="number" class="precio-input" value="22" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 11.00</div></div></div>
-        <div class="item" data-cantidad="2"><input type="checkbox" class="check" onchange="calc()"><div class="item-info"><div class="nombre">Té variado</div><div class="detalles">2 cajas</div></div><div class="item-right"><input type="number" class="precio-input" value="8" step="0.01" onchange="calc()" oninput="calc()"><div class="costo">S/ 16.00</div></div></div>
-    </div>
-
-    <div class="footer">
-        <div class="budget">
-            <div class="budget-label">PRESUPUESTO TOTAL</div>
-            <div class="budget-amount" id="presupuesto">S/ 822.00</div>
+        
+        <div class="budget-summary">
+            <div class="budget-item">
+                <span class="budget-label">Presupuesto Total:</span>
+                <span class="budget-value" id="totalBudget">S/ 0.00</span>
+            </div>
+            <div class="budget-item">
+                <span class="budget-label">Comprando:</span>
+                <span class="budget-value" id="totalComprado">S/ 0.00</span>
+            </div>
+            <div class="budget-item">
+                <span class="budget-label">Falta Comprar:</span>
+                <span class="budget-value" id="totalFalta">S/ 0.00</span>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="category">
+                <div class="category-title">🥚 PROTEÍNAS</div>
+                <div class="items-grid" id="proteinas"></div>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">🥛 LÁCTEOS</div>
+                <div class="items-grid" id="lacteos"></div>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">🍞 PAN & HARINAS</div>
+                <div class="items-grid" id="pan"></div>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">🥬 VERDURAS & TUBÉRCULOS</div>
+                <div class="items-grid" id="verduras"></div>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">🌶️ AJÍ & CONDIMENTOS</div>
+                <div class="items-grid" id="condimentos"></div>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">🫒 ACEITES & SALSAS</div>
+                <div class="items-grid" id="aceites"></div>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">🌾 CEREALES & GRANOS</div>
+                <div class="items-grid" id="cereales"></div>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">☕ BEBIDAS</div>
+                <div class="items-grid" id="bebidas"></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-label">PRESUPUESTO TOTAL</div>
+            <div class="footer-total" id="footerTotal">S/ 0.00</div>
         </div>
     </div>
-
+    
     <script>
-        function calc() {
-            var totalGeneral = 0;
-            var totalComprado = 0;
-            var items = document.querySelectorAll('.item');
-
-            for (var i = 0; i < items.length; i++) {
-                var item = items[i];
-                var checkbox = item.querySelector('.check');
-                var input = item.querySelector('.precio-input');
-                var costDiv = item.querySelector('.costo');
-                var cantidad = parseFloat(item.getAttribute('data-cantidad')) || 0;
-
-                if (input && costDiv && cantidad > 0) {
-                    var precio = input.value ? parseFloat(input.value) : 0;
-                    var costo = (cantidad * precio).toFixed(2);
-
-                    costDiv.textContent = 'S/ ' + costo;
-                    totalGeneral += parseFloat(costo);
-
-                    if (checkbox && checkbox.checked) {
-                        totalComprado += parseFloat(costo);
-                    }
-                }
-            }
-
-            var falta = (totalGeneral - totalComprado).toFixed(2);
-
-            document.getElementById('total').textContent = 'S/ ' + totalGeneral.toFixed(2);
-            document.getElementById('comprando').textContent = 'S/ ' + totalComprado.toFixed(2);
-            document.getElementById('falta').textContent = 'S/ ' + falta;
-            document.getElementById('presupuesto').textContent = 'S/ ' + totalGeneral.toFixed(2);
+        const items = [
+            { id: 1, name: "Huevos frescos", specs: "2 planchas", cantidad: 2, precioBase: 10.50, category: "proteinas", tag: "perecedero" },
+            { id: 2, name: "Pollo pechuga", specs: "2.5 kg", cantidad: 2.5, precioBase: 18.00, category: "proteinas", tag: "perecedero" },
+            { id: 3, name: "Carne molida", specs: "1.5 kg", cantidad: 1.5, precioBase: 18.00, category: "proteinas", tag: "perecedero" },
+            { id: 4, name: "Chancho costillar", specs: "1.2 kg", cantidad: 1.2, precioBase: 24.00, category: "proteinas", tag: "perecedero" },
+            { id: 5, name: "Hotdog (paquete 10)", specs: "1 paquete", cantidad: 1, precioBase: 8.00, category: "proteinas", tag: "compra-dia" },
+            { id: 6, name: "Atún en lata", specs: "1 lata", cantidad: 1, precioBase: 3.50, category: "proteinas", tag: "almacenaje" },
+            { id: 7, name: "Leche fresca plancha 12L", specs: "2 planchas", cantidad: 2, precioBase: 42.00, category: "lacteos", tag: "perecedero" },
+            { id: 8, name: "Queso fundido", specs: "250 g", cantidad: 0.25, precioBase: 16.00, category: "lacteos", tag: "perecedero" },
+            { id: 9, name: "Mantequilla", specs: "200 g", cantidad: 0.2, precioBase: 24.00, category: "lacteos", tag: "perecedero" },
+            { id: 10, name: "Pan ciabatta", specs: "20 unidades", cantidad: 20, precioBase: 2.50, category: "pan", tag: "compra-dia" },
+            { id: 11, name: "Quáker (500g)", specs: "1 paquete", cantidad: 1, precioBase: 12.00, category: "pan", tag: "almacenaje" },
+            { id: 12, name: "Pan molido", specs: "300 g", cantidad: 0.3, precioBase: 15.00, category: "pan", tag: "almacenaje" },
+            { id: 13, name: "Papa blanca", specs: "4 kg", cantidad: 4, precioBase: 2.50, category: "verduras", tag: "almacenaje" },
+            { id: 14, name: "Cebolla", specs: "2.5 kg", cantidad: 2.5, precioBase: 2.00, category: "verduras", tag: "almacenaje" },
+            { id: 15, name: "Tomate", specs: "1.5 kg", cantidad: 1.5, precioBase: 4.00, category: "verduras", tag: "perecedero" },
+            { id: 16, name: "Coliflor", specs: "1 kg", cantidad: 1, precioBase: 6.00, category: "verduras", tag: "perecedero" },
+            { id: 17, name: "Palta", specs: "3 unidades", cantidad: 3, precioBase: 4.00, category: "verduras", tag: "perecedero" },
+            { id: 18, name: "Camote", specs: "1 kg", cantidad: 1, precioBase: 3.50, category: "verduras", tag: "almacenaje" },
+            { id: 19, name: "Arveja fresca", specs: "300 g", cantidad: 0.3, precioBase: 8.00, category: "verduras", tag: "perecedero" },
+            { id: 20, name: "Limón", specs: "1 kg", cantidad: 1, precioBase: 4.00, category: "verduras", tag: "almacenaje" },
+            { id: 21, name: "Ají amarillo", specs: "1.2 kg", cantidad: 1.2, precioBase: 12.00, category: "condimentos", tag: "perecedero" },
+            { id: 22, name: "Ajo molido", specs: "100 g", cantidad: 0.1, precioBase: 5.00, category: "condimentos", tag: "almacenaje" },
+            { id: 23, name: "Comino molido", specs: "50 g", cantidad: 0.05, precioBase: 25.00, category: "condimentos", tag: "almacenaje" },
+            { id: 24, name: "Sal", specs: "500 g", cantidad: 0.5, precioBase: 1.50, category: "condimentos", tag: "almacenaje" },
+            { id: 25, name: "Aceitunas sin hueso", specs: "200 g", cantidad: 0.2, precioBase: 18.00, category: "condimentos", tag: "almacenaje" },
+            { id: 26, name: "Aceite vegetal", specs: "1.5 L", cantidad: 1.5, precioBase: 12.00, category: "aceites", tag: "almacenaje" },
+            { id: 27, name: "Arroz blanco", specs: "1 kg", cantidad: 1, precioBase: 6.00, category: "cereales", tag: "almacenaje" },
+            { id: 28, name: "Tallarín", specs: "750 g", cantidad: 0.75, precioBase: 6.00, category: "cereales", tag: "almacenaje" },
+            { id: 29, name: "Frejol canario", specs: "1 kg", cantidad: 1, precioBase: 8.00, category: "cereales", tag: "almacenaje" },
+            { id: 30, name: "Pasas", specs: "150 g", cantidad: 0.15, precioBase: 45.00, category: "cereales", tag: "almacenaje" },
+            { id: 31, name: "Café molido", specs: "250 g", cantidad: 0.25, precioBase: 22.00, category: "bebidas", tag: "almacenaje" },
+            { id: 32, name: "Azúcar blanca", specs: "500 g", cantidad: 0.5, precioBase: 4.50, category: "bebidas", tag: "almacenaje" },
+            { id: 33, name: "Jamonada", specs: "300 g", cantidad: 0.3, precioBase: 28.00, category: "condimentos", tag: "perecedero" },
+        ];
+        
+        const categoryNames = {
+            proteinas: "proteinas",
+            lacteos: "lacteos",
+            pan: "pan",
+            verduras: "verduras",
+            condimentos: "condimentos",
+            aceites: "aceites",
+            cereales: "cereales",
+            bebidas: "bebidas"
+        };
+        
+        const tagNames = {
+            perecedero: "🥬 Perecedero",
+            "compra-dia": "⚠️ Compra ese día",
+            almacenaje: "🗂️ Almacenaje"
+        };
+        
+        function renderItems() {
+            Object.values(categoryNames).forEach(category => {
+                const container = document.getElementById(category);
+                const categoryItems = items.filter(item => item.category === category);
+                
+                container.innerHTML = categoryItems.map(item => {
+                    const tagClass = `tag-${item.tag}`;
+                    return `
+                        <div class="item" id="item-${item.id}" data-id="${item.id}">
+                            <input type="checkbox" class="item-checkbox" data-id="${item.id}">
+                            <div class="item-details">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-specs">
+                                    <span>${item.specs}</span>
+                                    <span class="item-tags">
+                                        <span class="tag ${tagClass}">${tagNames[item.tag]}</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="price-section">
+                                <div class="price-label">S/ Unit.</div>
+                                <input type="number" class="price-input" data-id="${item.id}" value="${item.precioBase}" step="0.01" min="0">
+                                <div class="price-total" data-id="${item.id}">S/ ${(item.precioBase * item.cantidad).toFixed(2)}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join("");
+            });
+            
+            attachEventListeners();
+            calcularTotales();
         }
-
-        calc();
+        
+        function attachEventListeners() {
+            document.querySelectorAll(".item-checkbox").forEach(checkbox => {
+                checkbox.addEventListener("change", function() {
+                    const itemId = this.dataset.id;
+                    const itemElement = document.getElementById(`item-${itemId}`);
+                    if (this.checked) {
+                        itemElement.classList.add("checked");
+                    } else {
+                        itemElement.classList.remove("checked");
+                    }
+                    calcularTotales();
+                });
+            });
+            
+            document.querySelectorAll(".price-input").forEach(input => {
+                input.addEventListener("change", function() {
+                    const itemId = this.dataset.id;
+                    const item = items.find(i => i.id == itemId);
+                    const newPrice = parseFloat(this.value) || 0;
+                    const total = (newPrice * item.cantidad).toFixed(2);
+                    
+                    document.querySelector(`[data-id="${itemId}"].price-total`).textContent = `S/ ${total}`;
+                    calcularTotales();
+                });
+            });
+        }
+        
+        function calcularTotales() {
+            let totalBudget = 0;
+            let totalComprado = 0;
+            
+            items.forEach(item => {
+                const priceInput = document.querySelector(`input[data-id="${item.id}"]`);
+                const precio = parseFloat(priceInput.value) || 0;
+                const costo = precio * item.cantidad;
+                
+                totalBudget += costo;
+                
+                const checkbox = document.querySelector(`input[type="checkbox"][data-id="${item.id}"]`);
+                if (checkbox.checked) {
+                    totalComprado += costo;
+                }
+            });
+            
+            const totalFalta = totalBudget - totalComprado;
+            
+            document.getElementById("totalBudget").textContent = `S/ ${totalBudget.toFixed(2)}`;
+            document.getElementById("totalComprado").textContent = `S/ ${totalComprado.toFixed(2)}`;
+            document.getElementById("totalFalta").textContent = `S/ ${totalFalta.toFixed(2)}`;
+            document.getElementById("footerTotal").textContent = `S/ ${totalBudget.toFixed(2)}`;
+        }
+        
+        renderItems();
+        setInterval(calcularTotales, 100);
     </script>
 </body>
 </html>
