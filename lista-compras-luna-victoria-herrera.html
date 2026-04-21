@@ -415,7 +415,6 @@
             });
             
             attachEventListeners();
-            calcularTotales();
         }
         
         function attachEventListeners() {
@@ -449,29 +448,42 @@
             let totalBudget = 0;
             let totalComprado = 0;
             
-            items.forEach(item => {
-                const priceInput = document.querySelector(`input[data-id="${item.id}"]`);
-                const precio = parseFloat(priceInput.value) || 0;
-                const costo = precio * item.cantidad;
+            document.querySelectorAll(".price-input").forEach(input => {
+                const itemId = input.dataset.id;
+                const precio = parseFloat(input.value) || 0;
+                const item = items.find(i => i.id == itemId);
                 
-                totalBudget += costo;
-                
-                const checkbox = document.querySelector(`input[type="checkbox"][data-id="${item.id}"]`);
-                if (checkbox.checked) {
-                    totalComprado += costo;
+                if (item) {
+                    const costo = precio * item.cantidad;
+                    totalBudget += costo;
+                    
+                    const checkbox = document.querySelector(`input[type="checkbox"][data-id="${itemId}"]`);
+                    if (checkbox && checkbox.checked) {
+                        totalComprado += costo;
+                    }
                 }
             });
             
             const totalFalta = totalBudget - totalComprado;
             
-            document.getElementById("totalBudget").textContent = `S/ ${totalBudget.toFixed(2)}`;
-            document.getElementById("totalComprado").textContent = `S/ ${totalComprado.toFixed(2)}`;
-            document.getElementById("totalFalta").textContent = `S/ ${totalFalta.toFixed(2)}`;
-            document.getElementById("footerTotal").textContent = `S/ ${totalBudget.toFixed(2)}`;
+            const budgetEl = document.getElementById("totalBudget");
+            const compradoEl = document.getElementById("totalComprado");
+            const faltaEl = document.getElementById("totalFalta");
+            const footerEl = document.getElementById("footerTotal");
+            
+            if (budgetEl) budgetEl.textContent = `S/ ${totalBudget.toFixed(2)}`;
+            if (compradoEl) compradoEl.textContent = `S/ ${totalComprado.toFixed(2)}`;
+            if (faltaEl) faltaEl.textContent = `S/ ${totalFalta.toFixed(2)}`;
+            if (footerEl) footerEl.textContent = `S/ ${totalBudget.toFixed(2)}`;
         }
         
         renderItems();
-        setInterval(calcularTotales, 100);
+        
+        setTimeout(() => {
+            calcularTotales();
+        }, 100);
+        
+        setInterval(calcularTotales, 200);
     </script>
 </body>
 </html>
