@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Lista de compras interactiva",
   "main": "server.js",
+  "engines": {
+    "node": "18.x"
+  },
   "dependencies": {
     "express": "^4.18.2"
   },
