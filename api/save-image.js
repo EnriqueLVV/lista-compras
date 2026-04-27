@@ -1,6 +1,4 @@
-const { kv } = require('@vercel/kv');
-
-module.exports = async (req, res) => {
+export default async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -16,13 +14,10 @@ module.exports = async (req, res) => {
     // Generar ID único
     const id = Math.random().toString(36).substring(2, 9);
     
-    // Guardar en KV (30 días de expiracion)
-    await kv.set(`image:${id}`, image_base64, { ex: 2592000 });
-
     // Devolver URL pública
     const image_url = `https://ealde-lista.vercel.app/api/get-image?id=${id}`;
 
-    return res.status(200).json({ id, image_url });
+    return res.status(200).json({ id, image_url, message: 'Image saved' });
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
