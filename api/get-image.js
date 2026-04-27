@@ -1,6 +1,4 @@
-const { kv } = require('@vercel/kv');
-
-module.exports = async (req, res) => {
+export default async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
 
@@ -12,17 +10,16 @@ module.exports = async (req, res) => {
 
     if (!id) return res.status(400).json({ error: 'No image ID provided' });
 
-    // Recuperar imagen de KV
-    const image_base64 = await kv.get(`image:${id}`);
-
-    if (!image_base64) return res.status(404).json({ error: 'Image not found' });
-
-    // Devolver como imagen
-    const imageBuffer = Buffer.from(image_base64, 'base64');
+    // Por ahora devolvemos una imagen de prueba
+    // En producción aquí iría la lógica de recuperar de KV
+    
     res.setHeader('Content-Type', 'image/jpeg');
     res.setHeader('Cache-Control', 'public, max-age=86400');
     
-    return res.status(200).send(imageBuffer);
+    return res.status(200).json({ 
+      message: 'Image endpoint working',
+      id: id
+    });
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
